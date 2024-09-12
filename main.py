@@ -6,10 +6,12 @@ app = Flask(__name__)
 # Placeholder for future PORE API integration
 pore_api = None  # Placeholder to indicate missing PORE API integration
 
+
 @app.route("/")
 def hello_world():
     name = os.environ.get("NAME", "PathwayTips")
     return "Hello {}!".format(name)
+
 
 @app.route("/pore", methods=["GET", "POST"])
 def pore_api_handler():
@@ -33,6 +35,7 @@ def pore_api_handler():
         message = "Unsupported request method for PORE API."
 
     return jsonify({"message": message})
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
