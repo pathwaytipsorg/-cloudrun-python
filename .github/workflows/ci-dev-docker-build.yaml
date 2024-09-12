@@ -12,14 +12,13 @@ env:
   HOTFIX_IMAGE_TAG: "hotfix"
   IMAGE_NAME: myapp
   GIT_HASH: ${{ github.event.pull_request.head.sha }}
-  # Replace with your JFrog credentials
   JFROG_USERNAME: ${{ secrets.JFROG_USERNAME }}
   JFROG_PASSWORD: ${{ secrets.JFROG_PASSWORD }}
   PR_JFROG_REPO: "dap-docker-public.artifactory.devops.org.net:5000"
   DEV_JFROG_REPO: "dap-docker-snapshots.artifactory.devops.org.net:5000"
   PROD_JFROG_REPO: "dap-docker-releases.artifactory.devops.org.net:5000"
-  CURRENT_APP_VER:
-  BRANCH_NAME:
+  CURRENT_APP_VER: ""
+  BRANCH_NAME: ""
   PROJECT_NAME: "myproject"
 
 jobs:
@@ -27,36 +26,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the code from the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Set up Python environment
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.10'
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
 
-    # Install dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    # Run Lint (Optional)
-    - name: Lint code with flake8
-      run: |
-        pip install flake8
-        flake8 main.py  # Add more files as needed
+      # Install tox and run tests
+      - name: Install tox and run tests
+        run: |
+          pip install tox
+          tox -e py  # This runs the tox environment 'py'
 
-    # Run Unit Tests
-    - name: Run tests
-      run: |
-        pytest  # Replace with your test framework if needed
+      # Run Lint (Optional)
+      - name: Lint code with flake8
+        run: |
+          pip install flake8
+          flake8 main.py  # Add more files as needed
 
-    # Ensure Flask app starts up (Optional)
-    - name: Test Flask startup
-      run: |
-        python main.py &
-        sleep 5  # Wait for Flask to start
-        curl http://127.0.0.1:8080  # Test if the app is running
+      # Run Unit Tests
+      - name: Run tests
+        run: |
+          pytest  # Replace with your test framework if needed
+
+      # Ensure Flask app starts up (Optional)
+      - name: Test Flask startup
+        run: |
+          python main.py &
+          sleep 5  # Wait for Flask to start
+          curl http://127.0.0.1:8080  # Test if the app is running
