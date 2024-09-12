@@ -4,7 +4,7 @@ from flask import Flask
 from flask.testing import FlaskClient
 
 # Import the Flask app from your application file
-from your_app_file import app  # Replace 'your_app_file' with the actual filename of your Flask app without the .py extension
+from main import app  # Replace 'your_app_file' with the actual filename of your Flask app without the .py extension
 
 @pytest.fixture
 def client() -> FlaskClient:
