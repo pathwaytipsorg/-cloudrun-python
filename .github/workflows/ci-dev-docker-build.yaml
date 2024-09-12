@@ -1,0 +1,47 @@
+name: my-app-name
+
+on:
+  pull_request:
+    branches: [master, develop]
+  push:
+    branches: [master, develop]
+
+env:
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  DEFAULT_IMAGE_TAG: "latest"
+  HOTFIX_IMAGE_TAG: "hotfix"
+  IMAGE_NAME: myapp
+  GIT_HASH: ${{ github.event.pull_request.head.sha }}
+  # Replace with your JFrog credentials
+  JFROG_USERNAME: ${{ secrets.JFROG_USERNAME }}
+  JFROG_PASSWORD: ${{ secrets.JFROG_PASSWORD }}
+  PR_JFROG_REPO: "dap-docker-public.artifactory.devops.org.net:5000"
+  DEV_JFROG_REPO: "dap-docker-snapshots.artifactory.devops.org.net:5000"
+  PROD_JFROG_REPO: "dap-docker-releases.artifactory.devops.org.net:5000"
+  CURRENT_APP_VER:
+  BRANCH_NAME:
+  PROJECT_NAME: "myproject"
+
+jobs:
+  docker-image-build:
+    name: Build Docker Image, Push to JFrog Artifactory Repo
+    runs-on: [self-hosted, Linux]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: '0'
+      - name: Login to JFrog Artifactory
+        run: |
+          echo "${{ secrets.JFROG_USERNAME }}:${{ secrets.JFROG_PASSWORD }}" | docker login --username ${{ secrets.JFROG_USERNAME }} --password ${{ secrets.JFROG_PASSWORD }} ${{ secrets.JFROG_URL }}
+      - name: Build Docker Image
+        run: docker build --tag "${{ env.IMAGE_NAME }}:${{ env.DEFAULT_IMAGE_TAG }}" .
+      - name: Push Image to JFrog Artifactory
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            docker push ${{ env.PROD_JFROG_REPO }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_IMAGE_TAG }}
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            docker push ${{ env.DEV_JFROG_REPO }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_IMAGE_TAG }}
+          else
+            docker push ${{ env.PR_JFROG_REPO }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_IMAGE_TAG }}:${{ env.PR_NUMBER }}
+          fi
