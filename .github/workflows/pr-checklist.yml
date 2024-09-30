@@ -13,3 +13,4 @@ jobs:
           if ! grep -q '\[x\]' "$GITHUB_EVENT_PATH"; then
             echo "Please select a change type."
             exit 1
+          fi
