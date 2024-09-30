@@ -1,0 +1,14 @@
+# Owners for everything in the repository
+* @tips4you @global-owner1 @global-owner2
+
+# Owners for documentation files in the docs directory
+/docs/ @docs-team
+
+# Owners for Python files in the repo
+*.py @backend-team
+
+# Owners for a specific file
+/src/api/config.yaml @api-owner
+
+# Owners for everything in the /src/ directory
+/src/ @src-team
