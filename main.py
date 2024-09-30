@@ -6,7 +6,6 @@ app = Flask(__name__)
 # Placeholder for future PORE API integration
 pore_api = None  # Placeholder to indicate missing PORE API integration
 
-
 @app.route("/")
 def hello_world():
     name = os.environ.get("NAME", "PathwayTips")
