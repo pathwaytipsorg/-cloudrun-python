@@ -1,0 +1,15 @@
+name: PR Checklist
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  checklist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Change Type
+        run: |
+          if ! grep -q '\[x\]' "$GITHUB_EVENT_PATH"; then
+            echo "Please select a change type."
+            exit 1
